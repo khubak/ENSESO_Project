@@ -201,7 +201,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"username\": \"khubak\",\n  \"password\": \"Initial1!\",\n  \"language_id\": \"EN\",\n  \"api_log\": \"test postman login\"\n}",
+					"raw": "{\n  \"username\": \"username\",\n  \"password\": \"password\",\n  \"language_id\": \"EN\",\n  \"api_log\": \"test postman login\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
