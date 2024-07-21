@@ -36,7 +36,7 @@ const Login = () => {
         setError
       );
       if (error == false) {
-        const expires = new Date(new Date().getTime() + 26 * 60 * 1000); // 26 minutes in milliseconds
+        const expires = new Date(new Date().getTime() + 24 * 60 * 1000); // 24 minutes in milliseconds
         Cookies.set("ENSESOLogin", true, { expires });
         navigate("/");
       }
