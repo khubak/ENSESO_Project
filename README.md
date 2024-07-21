@@ -6,10 +6,10 @@ React Frontend + Flask API
 AWS4 sig check, auth header utilization
 
 #FRONTEND
-switch state management to Redux
-rewrite api.jsx to enable utilization of JS promises fully
+switch state management to Redux,
+rewrite api.jsx to enable utilization of JS promises fully,
 test edit component
 
 #BACKEND
-call user_auth properly
+call user_auth properly,
 use ENV variables for api_key/secret
