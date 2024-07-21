@@ -3,7 +3,7 @@ React Frontend + Flask API
 
 ## TODO
 #BOTH
-AWS4 sig check, auth header utilization
+AWS4 sig check, auth header utilization, proper user_id handling
 
 #FRONTEND
 switch state management to Redux,
