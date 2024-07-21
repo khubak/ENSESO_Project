@@ -10,6 +10,6 @@ switch state management to Redux,
 rewrite api.jsx to enable utilization of JS promises fully,
 test edit component
 
-#BACKEND
+#API
 call user_auth properly,
 use ENV variables for api_key/secret
