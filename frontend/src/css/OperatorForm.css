@@ -1,0 +1,58 @@
+/* Table Styles */
+.custom-table-edit {
+    width: 100%; /* Adjust table width to fit within container */
+    margin: 0 auto; /* Center the table */
+    table-layout: fixed; /* Ensure table layout respects column widths */
+  }
+  
+  .custom-table-edit th,
+  .custom-table-edit td {
+    padding: 1rem; /* Add padding for better readability */
+    text-align: left;
+  }
+  
+  .custom-table-edit th:nth-child(1),
+  .custom-table-edit td:nth-child(1),
+  .custom-table-edit th:nth-child(2),
+  .custom-table-edit td:nth-child(2) {
+    width: 50%; /* Make both columns equal width */
+  }
+  
+  .custom-table-edit tbody tr td {
+    border-left: none !important;
+    border-right: none !important;
+  }
+  
+  .custom-table-edit tbody tr {
+    cursor: pointer; /* Indicates the row is clickable */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+  }
+  
+  .custom-table-edit tbody tr:hover {
+    background-color: #f0f0f0; /* Light gray background on hover */
+  }
+  
+  /* Button Styles */
+  .button-row {
+    width: 100%;
+    max-width: 120%; /* Match the table width */
+    margin: 0 auto;
+    display: flex;
+    justify-content: center; /* Center the buttons horizontally */
+    gap: 1rem; /* Add space between buttons */
+    padding: 1rem 0; /* Add padding to top and bottom */
+  }
+  
+  .button-row .btn {
+    flex: 1; /* Allow buttons to grow and take up space */
+    min-width: 120px; /* Minimum width for buttons */
+  }
+  
+  /* Add specific styles for button alignment within their column */
+  .btn-submit,
+  .btn-back {
+    display: block;
+    margin: 0 auto;
+    width: 100%; /* Ensure buttons take full width of their container */
+  }
+  

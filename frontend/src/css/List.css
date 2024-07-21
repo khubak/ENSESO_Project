@@ -1,0 +1,67 @@
+/* Table Styles */
+.custom-table-list {
+  width: 100%;
+  table-layout: fixed; /* Ensure the table respects column widths */
+  border-collapse: collapse; /* Merge borders */
+}
+
+.custom-table-list th,
+.custom-table-list td {
+  padding: 1rem; /* Add padding for better readability */
+  text-align: left;
+  border: none; /* Remove border from table cells */
+}
+
+.custom-table-list th {
+  border-bottom: 2px solid #dee2e6; /* Add bottom border to table headers */
+}
+
+.custom-table-list th:nth-child(1),
+.custom-table-list td:nth-child(1) {
+  width: 15%; /* Adjust width for EO_ID */
+}
+
+.custom-table-list th:nth-child(2),
+.custom-table-list td:nth-child(2) {
+  width: 15%; /* Adjust width for Name */
+}
+
+.custom-table-list th:nth-child(3),
+.custom-table-list td:nth-child(3) {
+  width: 20%; /* Adjust width for Email */
+}
+
+.custom-table-list th:nth-child(4),
+.custom-table-list td:nth-child(4) {
+  width: 15%; /* Adjust width for EO_Phone */
+}
+
+.custom-table-list th:nth-child(5),
+.custom-table-list td:nth-child(5) {
+  width: 13%; /* Adjust width for City */
+}
+
+.custom-table-list th:nth-child(6),
+.custom-table-list td:nth-child(6) {
+  width: 10%; /* Adjust width for Reg_EOID */
+}
+
+.custom-table-list th:nth-child(7),
+.custom-table-list td:nth-child(7) {
+  width: 10%; /* Adjust width for Reg_3RD */
+}
+
+.custom-table-list th:nth-child(8),
+.custom-table-list td:nth-child(8) {
+  width: 20%; /* Adjust width for Actions */
+  text-align: center;
+}
+
+.custom-table-list tbody tr td {
+  transition: background-color 0.3s ease;
+}
+
+.custom-table-list tbody tr td:hover {
+  background-color: #f0f0f0; /* Light gray background on hover */
+  cursor: pointer; /* Indicates the cell is clickable */
+}
