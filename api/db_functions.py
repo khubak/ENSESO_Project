@@ -3,11 +3,11 @@ from mysql.connector import Error
 from flask import Flask, request, jsonify
 
 # MySQL configuration
-MYSQL_HOST = '142.93.173.133'
+MYSQL_HOST = 'placeholderip'
 MYSQL_PORT = 3306
-MYSQL_USER = 'user'
-MYSQL_PASSWORD = 'rRH@sB7J5G1C'
-MYSQL_DB = 'tobacco'
+MYSQL_USER = 'placeholderuser'
+MYSQL_PASSWORD = 'placeholderpassword'
+MYSQL_DB = 'placeholderdb_name'
 
 
 def get_db_connection():
