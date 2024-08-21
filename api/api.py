@@ -1,17 +1,35 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 from db_functions import execute_stored_procedure, map_response
 from response_fields import *
-from flask_caching import Cache
 import logging_config
+import uuid
+from auth import auth
 
 app = Flask(__name__)
-#app.config['CACHE_TYPE'] = 'simple'
-#cache = Cache(app)
 CORS(app)
 
 # Setup logging
 logger = logging_config.setup_logging()
+
+
+@app.before_request
+def before_request():
+    if request.method != 'OPTIONS':
+        # Generate a unique request ID for each request
+        g.request_id = str(uuid.uuid4())
+        g.api_log = f"{g.request_id}.log"
+        logger.info(f"Request ID {g.request_id} started")
+
+
+@app.after_request
+def after_request(response):
+    if request.method != 'OPTIONS':
+        # Log the end of the request with the response status
+        logger.info(
+            f"Request ID {g.request_id} completed with status {response.status_code}")
+    return response
+
 
 # User login
 @app.route('/login', methods=['POST'])
@@ -25,8 +43,7 @@ def user_login():
     logger.info(f"Request data: {data}")
 
     required_fields = [
-        "username", "password", "language_id",
-        "api_log"
+        "username", "password", "language_id"
     ]
 
     if not all(field in data for field in required_fields):
@@ -34,23 +51,12 @@ def user_login():
         return jsonify({"error": "Missing fields in request data"}), 400
 
     params = [data[field] for field in required_fields]
+    params.append(g.api_log)
     logger.info(f"Login parameters: {params}")
 
     result = map_response(execute_stored_procedure(
         'user_login', params), login_response_fields)
     logger.info(f"Login result: {result}")
-
-    api_key = result[0]['api_key']
-
-    user_get_secret = map_response(execute_stored_procedure(
-        'user_get_secret', [api_key]), user_get_secret_response_fields)
-    logger.info(f"User get secret result: {user_get_secret}")
-
-    if (user_get_secret[0]['status'] == 'OK'):
-        users_id = user_get_secret[0]['users_id']
-        execute_stored_procedure('user_authenticate', [users_id])
-        #cache.set(api_key, users_id, timeout=10000)
-        logger.info(f"User authenticated and cached with key: {api_key}")
 
     return jsonify(result)
 
@@ -62,7 +68,7 @@ def eo_register():
     if not request.is_json:
         logger.error("Request is not JSON")
         return jsonify({"error": "Request must be JSON"}), 415
-
+    
     data = request.get_json()
     logger.info(f"Request data: {data}")
 
@@ -72,8 +78,7 @@ def eo_register():
         "EO_Email", "EO_Phone", "EO_A_Info", "VAT_R",
         "VAT_N", "TAX_N", "EO_ExciseNumber1", "EO_ExciseNumber2",
         "OtherEOID_R", "OtherEOID_N_list", "Reg_3RD", "Reg_EOID",
-        "EO_OtherID", "Extensibility", "EO_Type", "users_id",
-        "api_log"
+        "EO_OtherID", "Extensibility", "EO_Type"
     ]
 
     if not all(field in data for field in required_fields):
@@ -81,6 +86,17 @@ def eo_register():
         return jsonify({"error": "Missing fields in request data"}), 400
 
     params = [data[field] for field in required_fields]
+    
+    logger.info("Checking authorization!")
+    authCheck = auth(request.headers.get("Authorization"),
+                     request.headers.get("x-amz-date"), "POST", params)
+
+    if (authCheck == False):
+        logger.error("Authorization failed!")
+        return jsonify({"error": "Unauthorized"}), 401
+    logger.info("Request authorization succesful!")
+    
+    params.append(g.api_log)
     logger.info(f"EO register parameters: {params}")
 
     result = execute_stored_procedure('EO_register', params)
@@ -107,7 +123,7 @@ def eo_update(id):
         "VAT_N", "TAX_N", "EO_ExciseNumber1", "EO_ExciseNumber2",
         "OtherEOID_R", "OtherEOID_N_list", "Reg_3RD", "Reg_EOID",
         "EO_OtherID", "Extensibility", "EO_Type", "EO_ID",
-        "EO_CODE", "users_id", "api_log"
+        "EO_CODE"
     ]
 
     if not all(field in data for field in required_fields):
@@ -115,6 +131,17 @@ def eo_update(id):
         return jsonify({"error": "Missing fields in request data"}), 400
 
     params = [data[field] for field in required_fields]
+    
+    logger.info("Checking authorization!")
+    authCheck = auth(request.headers.get("Authorization"),
+                     request.headers.get("x-amz-date"), "PUT", params)
+
+    if (authCheck == False):
+        logger.error("Authorization failed!")
+        return jsonify({"error": "Unauthorized"}), 401
+    logger.info("Request authorization succesful!")
+    
+    params.append(g.api_log)
     logger.info(f"EO update parameters: {params}")
 
     result = execute_stored_procedure('EO_update', params)
@@ -129,16 +156,26 @@ def eo_delete(id):
     logger.info(f"EO delete endpoint called with ID: {id}")
     required_params = [
         "EO_ID", "EO_CODE", "Reg_3RD", "Reg_EOID",
-        "Extensibility", "users_id", "api_log"
+        "Extensibility"
     ]
 
     params = [request.args.get(param) for param in required_params]
-    logger.info(f"EO delete parameters: {params}")
 
     if any(param is None for param in params):
         logger.error("Missing query parameters")
         return jsonify({"error": "Missing query parameters"}), 400
+    
+    logger.info("Checking authorization!")
+    authCheck = auth(request.headers.get("Authorization"),
+                     request.headers.get("x-amz-date"), "DELETE", params)
 
+    if (authCheck == False):
+        logger.error("Authorization failed!")
+        return jsonify({"error": "Unauthorized"}), 401
+    logger.info("Request authorization succesful!")
+
+    params.append(g.api_log)
+    logger.info(f"EO delete parameters: {params}")
     result = execute_stored_procedure('EO_delete', params)
     logger.info(f"EO delete result: {result}")
 
@@ -149,17 +186,24 @@ def eo_delete(id):
 @app.route('/eolist', methods=['GET'])
 def query_eolist():
     logger.info("Query EO list endpoint called")
-    required_params = [
-        'users_id', 'api_log'
-    ]
+    params = []
+    logger.info("Checking authorization!")
+    authCheck = auth(request.headers.get("Authorization"),
+                     request.headers.get("x-amz-date"), "GET", params)
 
-    params = [request.args.get(param) for param in required_params]
+    if (authCheck == False):
+        logger.info("Authorization failed!")
+        return jsonify({"error": "Unauthorized"}), 401
+    logger.info("Request authorization succesful!")
+
+    params.append(g.api_log)
     logger.info(f"EO list query parameters: {params}")
 
-    if any(param is None for param in params):
+    # Exclude g.api_log from the check
+    if any(param is None for param in params[:-1]):
         logger.error("Missing query parameters")
         return jsonify({"error": "Missing query parameters"}), 400
-
+    print(f'eolist params:')
     result = execute_stored_procedure('query_eolist', params)
     logger.info(f"EO list result: {result}")
 
@@ -171,13 +215,25 @@ def query_eolist():
 def query_eo(id):
     logger.info(f"Query EO details endpoint called with ID: {id}")
     required_params = [
-        "EO_ID", "users_id", "api_log"
+        "EO_ID",
     ]
 
     params = [request.args.get(param) for param in required_params]
+    
+    logger.info("Checking authorization!")
+    authCheck = auth(request.headers.get("Authorization"),
+                     request.headers.get("x-amz-date"), "GET", params)
+
+    if (authCheck == False):
+        logger.info("Authorization failed!")
+        return jsonify({"error": "Unauthorized"}), 401
+    logger.info("Request authorization succesful!")
+    
+    params.append(g.api_log)
     logger.info(f"EO details query parameters: {params}")
 
-    if any(param is None for param in params):
+    # Exclude g.api_log from the check
+    if any(param is None for param in params[:-1]):
         logger.error("Missing query parameters")
         return jsonify({"error": "Missing query parameters"}), 400
 
@@ -188,4 +244,5 @@ def query_eo(id):
 
 
 if __name__ == '__main__':
+    #app.run(debug=False)
     app.run(debug=True)

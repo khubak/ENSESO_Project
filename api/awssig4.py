@@ -23,10 +23,11 @@ def getSignatureKey(key, dateStamp, regionName, serviceName):
     return kSigning
 
 
-def calculate_aws4_signature(api_key, api_secret, http_method, canonical_headers, timestamp):
+def calculate_aws4_signature(api_key, api_secret, http_method, timestamp):
     # Step 1: Create a date for headers and the credential string
     t = datetime.datetime.strptime(timestamp, '%Y%m%dT%H%M%SZ')
     amz_date = t.strftime('%Y%m%dT%H%M%SZ')  # Format: YYYYMMDD'T'HHMMSS'Z'
+
     # Date w/o time, used in credential scope
     date_stamp = t.strftime('%Y%m%d')
 
@@ -47,17 +48,14 @@ def calculate_aws4_signature(api_key, api_secret, http_method, canonical_headers
     # Step 5: Add signing information to the request
     authorization_header = f"{algorithm} Credential={api_key}/{credential_scope}, SignedHeaders=host;x-amz-date, Signature={signature}"
 
-    return {
-        "x-amz-date": amz_date,
-        "Authorization": authorization_header
-    }
+    return signature
 
 
 # Example usage
-if __name__ == 'main':
+if __name__ == '__main__':
     api_key = '55305bd623f10f22b8f3427916da8b0a'
     api_secret = '28b5b016e14c839c85cd736e30d7ed0a'
-    timestamp = '20210717T000000Z'  # Example timestamp
+    timestamp = '20240808T081324Z'  # Example timestamp
     http_method = 'GET'
     headers = calculate_aws4_signature(
         api_key, api_secret, http_method, timestamp)

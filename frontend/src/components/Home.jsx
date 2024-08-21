@@ -7,9 +7,7 @@ import { Container, Row, Col } from "react-bootstrap";
 
 const Home = () => {
   const navigate = useNavigate();
-
-  //const [loading, setLoading] = useState();
-  const login = Cookies.get("ENSESOLogin");
+  const login = Cookies.get("ENSESO");
 
   useEffect(() => {
     if (login === undefined) {

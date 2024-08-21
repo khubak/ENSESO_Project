@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import * as api from "../api";
+import getOne from "../api/getOne";
+import update from "../api/update";
 import {
   Form,
   Row,
@@ -20,7 +21,7 @@ const UpdateOperator = () => {
   const [id, setId] = useState(location.pathname.replace("/edit/", ""));
   const [formValues, setFormValues] = useState(initialFieldValues);
   const [errors, setErrors] = useState({});
-  const login = Cookies.get("ENSESOLogin");
+  const login = Cookies.get("ENSESO");
 
   useEffect(() => {
     if (login === undefined) {
@@ -29,7 +30,15 @@ const UpdateOperator = () => {
   }, [login, navigate]);
 
   useEffect(() => {
-    api.getOne(id, api.createGetOneParams(id), formValues, setFormValues);
+    const getOperator = async (id) => {
+      try {
+        const response = await getOne(id);
+        setFormValues(response.data[0]);
+      } catch (error) {
+        console.error("There was an error in getOperator function: " + error);
+      }
+    };
+    getOperator(id);
   }, []);
 
   const clickToBackHandler = () => {
@@ -44,6 +53,8 @@ const UpdateOperator = () => {
         ...formValues,
         [name]: parseInt(value),
       });
+      console.log("type change: ")
+      console.log(formValues.EO_Type)
     } else if (type === "switch" || type === "checkbox") {
       setFormValues({
         ...formValues,
@@ -57,12 +68,12 @@ const UpdateOperator = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     validateForm();
     e.preventDefault();
 
-    if (Object.keys(errors).length === 0) {
-      api.put(id, formValues, formValues, setFormValues);
+    if (Object.keys(errors).length == 0) {
+      await update(id, formValues);
       navigate("/view/" + id);
     }
   };

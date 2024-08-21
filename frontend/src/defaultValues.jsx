@@ -22,8 +22,6 @@ export const initialFieldValues = {
   EO_OtherID: "",
   Extensibility: "",
   EO_Type: 0,
-  users_id: 2016,
-  api_log: "test react log",
 };
 
 export const fields = [
@@ -212,23 +210,5 @@ export const fields = [
       { label: "Distributor", value: 3 },
       { label: "Retailer", value: 4 },
     ],
-  },
-  {
-    label: "Users ID:",
-    type: "number",
-    id: "users_id",
-    placeholder: "Enter Users ID",
-    name: "users_id",
-    required: true,
-    value: 2016,
-  },
-  {
-    label: "Api log:",
-    type: "text",
-    id: "api_log",
-    placeholder: "Api log",
-    name: "api_log",
-    required: true,
-    value: "react post call",
   },
 ];

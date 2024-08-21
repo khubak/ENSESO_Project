@@ -9,11 +9,13 @@ import UpdateOperator from "./components/UpdateOperator.jsx";
 import Login from "./components/Login.jsx";
 import TopBar from "./components/TopBar.jsx";
 import Logout from "./components/Logout.jsx";
-
+import { Provider } from "react-redux";
+import {store} from "./redux/store.js";
 
 function App() {
   return (
     <div>
+      <Provider store={store}>
       <TopBar />
       <Routes>
         <Route exact path="/" element={<Home />} />
@@ -23,6 +25,7 @@ function App() {
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/logout" element={<Logout />} />
       </Routes>
+      </Provider>
     </div>
   );
 }

@@ -6,7 +6,7 @@ const Logout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    Cookies.remove("ENSESOLogin");
+    Cookies.remove("ENSESO");
     navigate("/login");
   }, []);
 };

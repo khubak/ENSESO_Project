@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import * as api from "../api";
 import { Container, Table, Button } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchData, deleteItem } from "../redux/actions/list";
 import "../css/List.css";
 
 const List = () => {
-  const [data, setData] = useState([]);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const data = useSelector((state) => state.list);
 
   useEffect(() => {
-    api.getAll(data, setData);
-  }, []);
+    dispatch(fetchData());
+  }, [dispatch]);
 
   const handleDelete = async (
     event,
@@ -24,14 +26,14 @@ const List = () => {
     event.preventDefault();
     event.stopPropagation();
 
-    const params = api.createDeleteParams(
+    const params = {
       EO_ID,
       EO_CODE,
       Reg_3RD,
       Reg_EOID,
-      Extensibility
-    );
-    await api.del(EO_ID, params, data, setData);
+      Extensibility,
+    };
+    dispatch(deleteItem(params));
   };
 
   const handleRowClick = (id) => {

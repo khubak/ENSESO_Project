@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Form, Button, Container, Row, Col, Alert } from "react-bootstrap";
-import * as api from "../api";
+import * as api from "../api/login";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import * as loginCookie from "../loginCookie";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -11,7 +12,6 @@ const Login = () => {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const language = "EN";
-  const api_log = "test react login";
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -24,25 +24,33 @@ const Login = () => {
       const loginRequestBody = api.createLoginRequestBody(
         username,
         password,
-        language,
-        api_log
+        language
       );
-      // currently not working as expected
-      const response = await api.login(
-        message,
-        setMessage,
-        loginRequestBody,
-        error,
-        setError
-      );
-      if (error == false) {
-        const expires = new Date(new Date().getTime() + 24 * 60 * 1000); // 24 minutes in milliseconds
-        Cookies.set("ENSESOLogin", true, { expires });
-        navigate("/");
+
+      const response = await api.login(loginRequestBody);
+
+      if (response && response.data) {
+        // Login successful
+        if (response.data[0].errorCode == 0) {
+          // Set to 23 instead of 24 minutes to avoid errors with the DB
+          const expires = new Date(new Date().getTime() + 23 * 60 * 1000); // 23 minutes in milliseconds
+          const cookie = loginCookie.createLoginCookie(
+            response.data[0].api_key,
+            response.data[0].api_secret
+          );
+          Cookies.set("ENSESO", JSON.stringify(cookie), { expires });
+          navigate("/");
+        } else {
+          setError(true);
+          setMessage(response.data[0].errorMessage);
+        }
+      } else {
+        throw new Error("Invalid response from the server");
       }
     } catch (err) {
+      console.error("There was an error:", err);
       setError(true);
-      setMessage(err);
+      setMessage(err.message || "An error occurred during login.");
     } finally {
       setLoading(false);
     }

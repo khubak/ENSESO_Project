@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import * as api from "../api";
+import create from "../api/create";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
   Form,
@@ -17,7 +17,7 @@ import Cookies from "js-cookie";
 
 const OperatorForm = () => {
   const navigate = useNavigate();
-  const login = Cookies.get("ENSESOLogin");
+  const login = Cookies.get("ENSESO");
 
   useEffect(() => {
     if (login === undefined) {
@@ -53,14 +53,17 @@ const OperatorForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     const formErrors = validateForm();
     e.preventDefault();
 
     if (Object.keys(formErrors).length === 0) {
-      console.log("Form submitted:", formValues);
-      api.post(formValues, setFormValues);
-      navigate("/");
+      try {
+        await create(formValues);
+        navigate("/");
+      } catch (error) {
+        console.error("Error submitting form:", error);
+      }
     } else {
       console.log("Form has errors:", formErrors);
     }

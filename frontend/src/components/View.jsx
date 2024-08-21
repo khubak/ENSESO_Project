@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import * as api from "../api";
+import getOne from "../api/getOne";
+import del from "../api/del";
 import { Button, Container, Row, Col, Table } from "react-bootstrap";
-import "../css/View.css"; // Import the custom CSS
+import "../css/View.css";
 import Cookies from "js-cookie";
+
 const View = () => {
-  // id passed through navigate/location props for demonstration purposes
   const location = useLocation();
   const navigate = useNavigate();
-  const login = Cookies.get("ENSESOLogin");
+  const login = Cookies.get("ENSESO");
 
   useEffect(() => {
     if (login === undefined) {
@@ -16,17 +17,26 @@ const View = () => {
     }
   }, [login, navigate]);
 
-  const [id, setId] = useState(location.pathname.replace("/view/", ""));
+  const id = location.pathname.replace("/view/", "")
   const [data, setData] = useState([]);
+
   useEffect(() => {
-    api.getOne(id, api.createGetOneParams(id), data, setData);
+    const getOperator = async (id) => {
+      try {
+        const response = await getOne(id);
+        setData(response.data[0]);
+      } catch (error) {
+        console.error("There was an error in getOperator function: " + error);
+      }
+    };
+    getOperator(id);
   }, []);
 
   const clickToEditHandler = () => {
     navigate("/edit/" + id);
   };
 
-  const clickToDeleteHandler = async (
+  const handleDelete = async (
     event,
     EO_ID,
     EO_CODE,
@@ -35,16 +45,16 @@ const View = () => {
     Extensibility
   ) => {
     event.preventDefault();
+    event.stopPropagation();
 
-    const params = api.createDeleteParams(
+    const params = {
       EO_ID,
       EO_CODE,
       Reg_3RD,
       Reg_EOID,
-      Extensibility
-    );
-    //currently not funcitoning 100% properly
-    await api.del(EO_ID, params, data, setData);
+      Extensibility,
+    };
+    await del(EO_ID, params)
     navigate("/");
   };
 
@@ -96,7 +106,7 @@ const View = () => {
           <Button
             variant="danger"
             onClick={(event) =>
-              clickToDeleteHandler(
+              handleDelete(
                 event,
                 data.EO_ID,
                 data.EO_CODE,
