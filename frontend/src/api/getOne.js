@@ -4,7 +4,7 @@ import requestHeaders from "./auth";
 
 const getOne = async (id) => {
   const requestURL = URL.baseURL + URL.getOneURL + id;
-    console.log("URL: " + requestURL)
+
   try {
     const response = axios({
       method: "get",

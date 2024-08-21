@@ -1,2 +1,7 @@
 # ENSESO_Project
-React Frontend + Flask API
+
+React frontend and Flask API CRUD application
+
+## TODO
+
+Write README.md (instructions to run, make screenshots visible)

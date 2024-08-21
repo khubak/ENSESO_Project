@@ -4,7 +4,7 @@ import requestHeaders from "./auth";
 
 const update = async (id, data) => {
   const requestURL = URL.baseURL + URL.updateURL + id;
-  console.log("URL: " + requestURL);
+
   try {
     const response = axios({
       method: "put",
