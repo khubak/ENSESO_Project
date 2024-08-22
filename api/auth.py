@@ -27,8 +27,7 @@ def auth(auth_header, xamzdate_header, method, required_params):
 
     execute_stored_procedure("user_authenticate", [users_id])
     required_params.append(users_id)
-    print(f"req params in auth: {required_params}")
-    # Check AWS
+
     return True
 
 
