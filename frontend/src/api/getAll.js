@@ -14,10 +14,8 @@ const getAll = async () => {
     return response;
   } catch (error) {
     console.error("There was an error making the request:", error);
-    throw error; // Rethrow the error so it can be caught by the caller
+    throw error;
   }
 };
-
-
 
 export default getAll;
