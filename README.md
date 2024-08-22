@@ -1,6 +1,6 @@
 # ENSESO_Project
 
-React frontend and Python Flask API CRUD application
+React Frontend and Python Flask API CRUD application
 
 ## TODO
 
